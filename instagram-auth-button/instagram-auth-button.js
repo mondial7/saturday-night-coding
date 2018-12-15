@@ -19,6 +19,13 @@ class InstagramAuthButton extends LitElement {
   render() {
     return html`
     <style>
+    * {
+      box-sizing: border-box;
+    }
+    /* some padding to improve click experience */
+    :host {
+      padding: 3px;
+    }
     /* button */
     span {
 

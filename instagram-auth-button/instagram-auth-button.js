@@ -35,13 +35,13 @@ class InstagramAuthButton extends LitElement {
     if (window.location.hash.indexOf('#access_token=') !== -1) {
       this.token = window.location.hash.substring('#access_token='.length-1);
       this.label = 'Signed in';
-      this.status = 'logged in';
+      this.status = this._statusLabel(1);
       this.dispatchEvent(new CustomEvent('signin', {
         detail: {status: this.status}
       }));
     } else {
       this.label = 'Sign in with Instagram';
-      this.status = 'logged out';
+      this.status = this._statusLabel(0);
       this.addEventListener('click', this._signIn);
     }
   }
@@ -96,7 +96,7 @@ class InstagramAuthButton extends LitElement {
       return;
     }
     this.label = 'Signing in ...';
-    this.status = 'signing in';
+    this.status = this._statusLabel(2);
     await this.updateComplete;
     this.dispatchEvent(new CustomEvent('signin', {
       detail: {status: this.status}
@@ -127,6 +127,15 @@ class InstagramAuthButton extends LitElement {
       `response_type=${this.strictMode ? 'code' : 'token'}`
     ].join('&');
     window.location.href = `${BASE}?${PARAMS}`
+  }
+
+  /**
+   * Status labels for custom events
+   * @param {Number}  code
+   * @return {String}
+   */
+  _statusLabel(code) {
+    return ['logged out','logged in','signing in'][code]
   }
 
   /**

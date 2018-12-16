@@ -103,19 +103,6 @@ class InstagramAuthButton extends LitElement {
     }));
     // start sign-in process
     this._redirectToLogin();
-    // warning for developers
-    if (!this.strictMode) {
-      console.warn(`
-        ****************
-        SECURITY WARNING
-        The current set sign in flow is Client-Side (Implicit) Authentication
-        If you wish to change to Server-Side (Explicit) mode please use the
-          <... strict-mode="true" ...></...>
-        attribute. More details about Authentication flows and security at:
-          https://www.instagram.com/developer/authentication/
-        ****************
-      `);
-    }
   }
 
   /**
@@ -140,6 +127,26 @@ class InstagramAuthButton extends LitElement {
       `response_type=${this.strictMode ? 'code' : 'token'}`
     ].join('&');
     window.location.href = `${BASE}?${PARAMS}`
+  }
+
+  /**
+   * On first load output a warning for developers
+   */
+  firstUpdated() {
+    super.firstUpdated()
+    // warning for developers
+    if (!this.strictMode) {
+      console.warn(`
+****************
+SECURITY WARNING
+The current set sign in flow is Client-Side (Implicit) Authentication
+If you wish to change to Server-Side (Explicit) mode please use the
+  <... strict-mode="true" ...></...>
+attribute. More details about Authentication flows and security at:
+  https://www.instagram.com/developer/authentication/
+****************
+      `);
+    }
   }
 
   /**

@@ -17,6 +17,10 @@ class InstagramAuthButton extends LitElement {
         attribute: 'redirect-uri',
         type: String,
       },
+      token: {
+        attribute: false,
+        type: String,
+      },
       label: {type: String},
       status: {type: String},
     };
@@ -24,9 +28,18 @@ class InstagramAuthButton extends LitElement {
 
   constructor() {
     super();
-    this.label = 'Sign in with Instagram';
-    this.status = 'logged out';
-    this.addEventListener('click', this._signIn);
+    if (window.location.hash.indexOf('#access_token=') !== -1) {
+      this.token = window.location.hash.substring('#access_token='.length-1);
+      this.label = 'Signed in';
+      this.status = 'logged in';
+      this.dispatchEvent(new CustomEvent('signin', {
+        detail: {status: this.status}
+      }));
+    } else {
+      this.label = 'Sign in with Instagram';
+      this.status = 'logged out';
+      this.addEventListener('click', this._signIn);
+    }
   }
 
   render() {

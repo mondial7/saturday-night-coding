@@ -32,14 +32,7 @@ class InstagramAuthButton extends LitElement {
 
   constructor() {
     super();
-    if (window.location.hash.indexOf('#access_token=') !== -1) {
-      this.token = window.location.hash.substring('#access_token='.length-1);
-      this.label = 'Signed in';
-      this.status = this._statusLabel(1);
-      this.dispatchEvent(new CustomEvent('signin', {
-        detail: {status: this.status}
-      }));
-    } else {
+    if (!this._evalAccessToken()) {
       this.label = 'Sign in with Instagram';
       this.status = this._statusLabel(0);
       this.addEventListener('click', this._signIn);
@@ -93,7 +86,7 @@ class InstagramAuthButton extends LitElement {
   async _signIn() {
     // pre sign-in process
     if (!this._verifyParameters()) {
-      return;
+      throw new ReferenceError('client-id and redirect-uri are badly defined');
     }
     this.label = 'Signing in ...';
     this.status = this._statusLabel(2);
@@ -136,6 +129,23 @@ class InstagramAuthButton extends LitElement {
    */
   _statusLabel(code) {
     return ['logged out','logged in','signing in'][code]
+  }
+
+  /**
+   * Evaluate if url contains access token
+   * @return {Boolean}
+   */
+  _evalAccessToken() {
+    if (window.location.hash.indexOf('#access_token=') !== -1) {
+      this.token = window.location.hash.substring('#access_token='.length-1);
+      this.label = 'Signed in';
+      this.status = this._statusLabel(1);
+      this.dispatchEvent(new CustomEvent('signin', {
+        detail: {status: this.status}
+      }));
+      return true;
+    }
+    return false;
   }
 
   /**

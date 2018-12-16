@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+
+    <title>instagram-auth-button test</title>
+
+    <script src="../node_modules/@webcomponents/webcomponentsjs/webcomponents-loader.js"></script>
+    <script src="../node_modules/wct-browser-legacy/browser.js"></script>
+
+    <script type="module" src="../instagram-auth-button.js"></script>
+  </head>
+  <body>
+
+    <test-fixture id="Baby">
+      <template>
+        <instagram-auth-button></instagram-auth-button>
+      </template>
+    </test-fixture>
+
+    <test-fixture id="Adult">
+      <template>
+        <instagram-auth-button
+          client-id="demo"
+          redirect-uri="demo.com"></instagram-auth-button>
+      </template>
+    </test-fixture>
+
+    <script>
+      describe('instagram-auth-button', () => {
+        let baby, working;
+        before(() => {
+          baby = fixture('Baby');
+          adult = fixture('Adult');
+        });
+
+        beforeEach(() => {
+          // to clear event listeners
+          adult = adult.cloneNode(true);
+        });
+
+        it('should initialized default properties', () => {
+          expect(baby.label).to.equal('Sign in with Instagram');
+          expect(baby.status).to.equal('logged out');
+          expect(baby.accessToken()).to.be.undefined;
+        });
+
+        it('should not verified the parameters', () => {
+          expect(baby._verifyParameters()).to.be.false;
+        });
+
+        it('should return the requested status', () => {
+          expect(baby._statusLabel(0)).to.equal('logged out');
+          expect(baby._statusLabel(1)).to.equal('logged in');
+          expect(baby._statusLabel(2)).to.equal('signing in');
+          expect(baby._statusLabel(3)).to.be.undefined;
+        });
+
+        it('should update label and status on click', async () => {
+          let label = adult.label;
+          let status = adult.status;
+          await adult._signIn();
+          expect(adult.label).to.not.equal(label);
+          expect(adult.status).to.not.equal(status);
+        });
+
+        it('should dispatch a \'signin\' event when the process starts', (done) => {
+          adult.addEventListener('signin', (e) => {
+            expect(e.detail.status).to.equal('signing in');
+            done();
+          });
+          adult.click();
+        });
+
+        it('should dispatch a \'signin\' event when the process ends', (done) => {
+          adult.addEventListener('signin', (e) => {
+            expect(e.detail.status).to.equal('logged in');
+            done();
+          });
+          window.location.hash = '#access_token=abc';
+          expect(adult._evalAccessToken()).to.be.true;
+        });
+
+      });
+    </script>
+
+  </body>
+</html>

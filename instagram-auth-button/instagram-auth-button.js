@@ -9,6 +9,10 @@ class InstagramAuthButton extends LitElement {
 
   static get properties() {
     return {
+      strictMode: {
+        attribute: 'strict-mode',
+        type: Boolean,
+      },
       clientId: {
         attribute: 'client-id',
         type: String,
@@ -99,6 +103,19 @@ class InstagramAuthButton extends LitElement {
     }));
     // start sign-in process
     this._redirectToLogin();
+    // warning for developers
+    if (!this.strictMode) {
+      console.warn(`
+        ****************
+        SECURITY WARNING
+        The current set sign in flow is Client-Side (Implicit) Authentication
+        If you wish to change to Server-Side (Explicit) mode please use the
+          <... strict-mode="true" ...></...>
+        attribute. More details about Authentication flows and security at:
+          https://www.instagram.com/developer/authentication/
+        ****************
+      `);
+    }
   }
 
   /**
@@ -120,9 +137,17 @@ class InstagramAuthButton extends LitElement {
     const PARAMS = [
       `client_id=${this.clientId}`,
       `redirect_uri=${this.redirectUri}`,
-      `response_type=token`
+      `response_type=${this.strictMode ? 'code' : 'token'}`
     ].join('&');
     window.location.href = `${BASE}?${PARAMS}`
+  }
+
+  /**
+   * Expose Access Token
+   * @return {String}
+   */
+  accessToken() {
+    return this.token
   }
 
 }

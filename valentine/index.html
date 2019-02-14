@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Valentine</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style>
+    @import url('https://fonts.googleapis.com/css?family=Lovers+Quarrel');
+    * {
+      box-sizing: border-box;
+    }
+    body, html {
+      padding: 0;
+      margin: 0;
+      background-color: #5E081E;
+      height: 100%;
+      font-family: 'Lovers Quarrel', cursive;
+    }
+    .background-layer {
+      z-index: 0;
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: url('hearts.svg');
+      background-size: 25%;
+      opacity: 0.3;
+    }
+    .card {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translateX(-50%) translateY(-50%);
+      width: 250px;
+      background: #E4CDD3;
+      border-radius: 2px;
+      opacity: 1;
+      transition: all 300ms;
+      box-shadow: 0px 0px 30px #3a0512;
+    }
+    .hidden {
+      opacity: 0;
+    }
+    #message {
+      position: relative;
+      padding: 20px;
+      margin: 0;
+      font-size: 30px;
+    }
+    #message span {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      font-size: 16px;
+    }
+    </style>
+  </head>
+  <body>
+    <div class="background-layer">
+
+    </div>
+    <div class="card">
+      <p id="message"></p>
+    </div>
+    <script type="text/javascript">
+      const messages = [
+        `Porque tu eres la<br>
+        que confunde a todos,<br>
+        pero no eres tu, es<br>
+        tu sonrisa y tu rastro`,
+        `Como un reloj tu decides<br>
+        cuando pasa lo que pasa,<br>
+        la jueza del tiempo`,
+        `El silencio es tan<br>
+        fascinante como el infinito.<br>
+        Solo el sonido de tus palabras<br>
+        debria ser digno de romperlo.`,
+        `Te necesito como necesito<br>
+        mi aliento de vuelta`,
+        `Eres como el equilibrio<br>
+        perfecto entre complejidad<br>
+        y semplicidad`,
+        `Cuando no eres increible<br>
+        en la vida, lo eres<br>
+        en tu vida vivida.`,
+        `Sonrisa hechizante<br>
+        ojos encantadores<br>
+        el pelo brillante<br>
+        momentos sin actores`
+      ]
+      let lock = false
+      const box = document.getElementById('message');
+      const card = document.getElementsByClassName('card')[0]
+      let target = 0
+      let upcoming = null
+      let restarting = null
+      const nextMessage = () => {
+        clearTimeout(upcoming)
+        clearTimeout(restarting)
+        card.className = 'card hidden'
+        setTimeout(() => {
+          box.innerHTML = `
+            ${messages[target++%messages.length]}
+            <span>${
+              target%messages.length == 0 ? messages.length
+                                          : target%messages.length
+            }/${messages.length}</span>
+          `
+          card.className = 'card'
+          upcoming = setTimeout(nextMessage, 4000)
+          restarting = setTimeout(nextMessage, 10000)
+        }, 301)
+      }
+      let touchLock = false
+      const toggleNext = e => {
+        if (!touchLock) {
+          touchLock = true
+          lock = !lock;
+          lock ? clearTimeout(upcoming) : nextMessage();
+        }
+        touchLock = false
+      }
+      window.addEventListener('touchstart', toggleNext)
+      window.addEventListener('click touchstart', toggleNext)
+      window.addEventListener('visibilitychange', () => {
+        clearTimeout(upcoming)
+        clearTimeout(restarting)
+        lock = true
+      });
+      // trigger it
+      nextMessage()
+    </script>
+  </body>
+</html>
